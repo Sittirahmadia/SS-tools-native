@@ -17,17 +17,24 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # DEPENDENCIES
 # ═══════════════════════════════════════════════════════════════════════════
 
-# ImGUI
+# ImGUI (Optional - only if third_party exists)
 set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/third_party/imgui")
-set(IMGUI_SOURCES
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_demo.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_win32.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_dx11.cpp
-)
+set(IMGUI_SOURCES "")
+
+if(EXISTS "${IMGUI_DIR}/imgui.cpp")
+    set(IMGUI_SOURCES
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_win32.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_dx11.cpp
+    )
+    message(STATUS "ImGUI: Found")
+else()
+    message(STATUS "ImGUI: Not found (optional)")
+endif()
 
 # Core header files
 set(CORE_HEADERS
@@ -61,9 +68,15 @@ add_executable(ss-tools-improved
 # Include directories
 target_include_directories(ss-tools-improved PRIVATE
     ${CMAKE_SOURCE_DIR}/include
-    ${IMGUI_DIR}
-    ${IMGUI_DIR}/backends
 )
+
+# Add ImGUI includes only if it exists
+if(EXISTS "${IMGUI_DIR}/imgui.h")
+    target_include_directories(ss-tools-improved PRIVATE
+        ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
+    )
+endif()
 
 # ═══════════════════════════════════════════════════════════════════════════
 # LIBRARIES & LINKING
